@@ -1,8 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email, password=None):
+    def create_user(self, email, name, password=None):
         if not email:
             raise ValueError("email is mandatory")
 
@@ -10,26 +10,28 @@ class CustomUserManager(BaseUserManager):
             raise ValueError("Password is mandatory")
         
         user = self.model( email = self.normalize_email(email) )
+        user.name = name
         user.set_password(password)
         user.save(using=self._db)
         return user
     
-    def create_superuser(self, email, password=None):
+    def create_superuser(self, email, name, password=None):
         if not email:
             raise ValueError("email is mandatory.")
         
         if not password:
             raise ValueError("Password is mandatory.")
 
-        user = self.create_user(email, password=password)
+        user = self.create_user(email, name, password=password)
         user.is_admin = True
         user.is_active = True
         user.is_staff = True
         user.save(using=self._db)
         return user
 
-class CustomUser(AbstractBaseUser):
+class CustomUser(AbstractBaseUser, PermissionsMixin):
     email               = models.EmailField(verbose_name='email address', max_length=255, unique=True)
+    name                = models.CharField(max_length=255)
     is_active           = models.BooleanField(default=False)
     is_staff            = models.BooleanField(default=False)
     is_admin            = models.BooleanField(default=False)
@@ -40,8 +42,7 @@ class CustomUser(AbstractBaseUser):
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
-    EMAIL_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['name']
 
     def __str__(self):
         return self.email
