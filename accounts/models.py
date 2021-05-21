@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email, name, password=None):
+    def create_user(self, email, name, password=None, **kwargs):
+        print(kwargs)
         if not email:
             raise ValueError("email is mandatory")
 
@@ -12,6 +13,13 @@ class CustomUserManager(BaseUserManager):
         user = self.model( email = self.normalize_email(email) )
         user.name = name
         user.set_password(password)
+        for key, val in kwargs.items():
+            if key == 'is_shop' and val == 'True':
+                user.is_shop = True
+            elif key == 'is_delivery_person' and val == 'True':
+                user.is_delivery_person = True
+            elif key == 'is_customer' and val == 'True':
+                user.is_customer = True
         user.save(using=self._db)
         return user
     
@@ -23,7 +31,7 @@ class CustomUserManager(BaseUserManager):
             raise ValueError("Password is mandatory.")
 
         user = self.create_user(email, name, password=password)
-        user.is_admin = True
+        user.is_superuser = True
         user.is_active = True
         user.is_staff = True
         user.save(using=self._db)
@@ -34,7 +42,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     name                = models.CharField(max_length=255)
     is_active           = models.BooleanField(default=False)
     is_staff            = models.BooleanField(default=False)
-    is_admin            = models.BooleanField(default=False)
     is_shop             = models.BooleanField(default=False)
     is_delivery_person  = models.BooleanField(default=False)
     is_customer         = models.BooleanField(default=False)
@@ -49,12 +56,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def has_perm(self, perm, obj=None):
         print(perm)
-        if not self.is_admin:
+        if not self.is_superuser:
             if perm == "accounts.view_customuser":
                 return True
             else:
                 return False
-        return self.is_admin
+        return self.is_superuser
 
     def has_module_perms(self, app_label):
         # print("app_label : {}".format(app_label))
