@@ -15,7 +15,7 @@ class SignupView(APIView):
         password1           = data['password1']
         password2           = data['password2']
         is_shop             = data['is_shop']
-        is_delivery_person  = data['is_delivery_person']
+        is_delivery_partner = data['is_delivery_partner']
         is_customer         = data['is_customer']
 
         if password1 == password2:
@@ -25,7 +25,7 @@ class SignupView(APIView):
                 if len(password1) < 8:
                     return Response( {'error': 'Password should be at least 8 characters'} )
                 else:
-                    user = User.objects.create_user(email=email, name=name, password=password1, is_shop=is_shop, is_delivery_person=is_delivery_person, is_customer=is_customer)
+                    user = User.objects.create_user(email=email, name=name, password=password1, is_shop=is_shop, is_delivery_partner=is_delivery_partner, is_customer=is_customer)
                     user.save()
                     return Response( {'success': 'User created successfully.'} )
         else:

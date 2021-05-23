@@ -16,8 +16,8 @@ class CustomUserManager(BaseUserManager):
         for key, val in kwargs.items():
             if key == 'is_shop' and val == 'True':
                 user.is_shop = True
-            elif key == 'is_delivery_person' and val == 'True':
-                user.is_delivery_person = True
+            elif key == 'is_delivery_partner' and val == 'True':
+                user.is_delivery_partner = True
             elif key == 'is_customer' and val == 'True':
                 user.is_customer = True
         user.save(using=self._db)
@@ -43,7 +43,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active           = models.BooleanField(default=False)
     is_staff            = models.BooleanField(default=False)
     is_shop             = models.BooleanField(default=False)
-    is_delivery_person  = models.BooleanField(default=False)
+    is_delivery_partner = models.BooleanField(default=False)
     is_customer         = models.BooleanField(default=False)
 
     objects = CustomUserManager()

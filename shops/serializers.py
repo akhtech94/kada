@@ -1,4 +1,3 @@
-from shop.models import Shop
 from rest_framework.serializers import ModelSerializer
 from .models import Shop
 

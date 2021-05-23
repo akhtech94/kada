@@ -5,7 +5,7 @@ from . models import CustomUser
 class CustomUserAdmin(UserAdmin):
     username = ''
 
-    list_display = ('email', 'is_active', 'is_shop', 'is_delivery_person', 'is_customer')
+    list_display = ('email', 'is_active', 'is_shop', 'is_delivery_partner', 'is_customer')
 
     list_filter = ()
 
@@ -14,7 +14,7 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {'fields': ('name',)}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'is_shop', 'is_delivery_person', 'is_customer', )}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'is_shop', 'is_delivery_partner', 'is_customer', )}),
     )
 
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
