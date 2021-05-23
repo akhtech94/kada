@@ -10,7 +10,7 @@ from products.views import addProduct
 
 class AddShopView(APIView):
 
-    def post(self, request, format=None):
+    def post(self, format=None):
         user            = self.request.user
         if not user.is_shop:
             return Response({"Error": "Inappropriate account for adding a shop."})
@@ -50,11 +50,15 @@ class ShopProductsView(ListAPIView):
     pagination_class    = None
 
 class ShopProductAddView(APIView):
-    permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
+        shop = Shop.objects.get(id=self.request.data['shop_id'])
+        if shop == None:
+            return Response( {"Error": "The shop you are trying to add product to does not exist."})
+        if shop.owner != self.request.user:
+            return Response( {"Error": "Sorry you can add products only to your shops !!!"} )
         data = self.request.data
-        shop = Shop.objects.get(id=1)
-        product = addProduct(data, shop)
-
-        return Response({"Success": "Product added successfully"})
+        status = addProduct(data)
+        if status:
+            return Response({"Success": "Product added successfully"})
+        return Response( {"Error": "This shop doesn't exist"} )

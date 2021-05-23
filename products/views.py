@@ -1,7 +1,8 @@
 from shops.models import Shop
 from .models import Product
 
-def addProduct(data, shop):
+def addProduct(data):
+    shop = Shop.objects.get(id=data['shop_id'])    
     product = Product(
         name        = data['name'],
         available   = data['available'],
@@ -18,3 +19,4 @@ def addProduct(data, shop):
             product.specification = value
 
     product.save()
+    return True
