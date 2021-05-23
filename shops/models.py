@@ -1,4 +1,5 @@
 from django.db import models
+from accounts.models import CustomUser
 
 class Shop(models.Model):
     name            = models.CharField(max_length=100, blank=False, null=False)
@@ -15,6 +16,7 @@ class Shop(models.Model):
     gst             = models.CharField(max_length=30, blank=True, null=True)
     licenseno       = models.CharField(max_length=30, blank=True, null=True)
     is_active       = models.BooleanField(default=False, blank=False, null=False)
+    owner           = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

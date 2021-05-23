@@ -9,9 +9,11 @@ from rest_framework.response import Response
 from products.views import addProduct
 
 class AddShopView(APIView):
-    permission_classes = (permissions.AllowAny,)
 
     def post(self, request, format=None):
+        user            = self.request.user
+        if not user.is_shop:
+            return Response({"Error": "Inappropriate account for adding a shop."})
         data            = self.request.data
         name            = data['name']
         streetAddress   = data['streetAddress']
@@ -29,6 +31,7 @@ class AddShopView(APIView):
             country=country,
             pincode=pincode,
             phoneNumber1=phoneNumber1,
+            owner=user,
         )
 
         return Response({"Success": "Shop added to the databse"})
