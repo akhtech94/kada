@@ -1,3 +1,4 @@
+from products.models import Product
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework import permissions
@@ -5,6 +6,7 @@ from .models import Shop
 from products.serializers import ProductSerializer
 from .serializers import ShopSerializer
 from rest_framework.response import Response
+from products.views import addProduct
 
 class AddShopView(APIView):
     permission_classes = (permissions.AllowAny,)
@@ -43,3 +45,13 @@ class ShopProductsView(ListAPIView):
     # queryset            = shop.product_set.all()
     # serializer_class    = ProductSerializer
     pagination_class    = None
+
+class ShopProductAddView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        data = self.request.data
+        shop = Shop.objects.get(id=1)
+        product = addProduct(data, shop)
+
+        return Response({"Success": "Product added successfully"})
