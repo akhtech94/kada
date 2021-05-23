@@ -1,8 +1,6 @@
-from products.models import Products
 from django.db import models
-from django.db.models.base import Model
 
-class Shop(models.Model):
+class Shops(models.Model):
     name            = models.CharField(max_length=100, blank=False, null=False)
     landmark        = models.CharField(max_length=50, blank=True, null=True)
     streetAddress   = models.CharField(max_length=255, blank=False, null=False)
