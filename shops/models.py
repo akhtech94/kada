@@ -1,11 +1,11 @@
 from django.db import models
 
-class Shops(models.Model):
+class Shop(models.Model):
     name            = models.CharField(max_length=100, blank=False, null=False)
     landmark        = models.CharField(max_length=50, blank=True, null=True)
     streetAddress   = models.CharField(max_length=255, blank=False, null=False)
     district        = models.CharField(max_length=50, blank=False, null=False)
-    State           = models.CharField(max_length=50, blank=False, null=False)
+    state           = models.CharField(max_length=50, blank=False, null=False)
     country         = models.CharField(max_length=50, blank=False, null=False)
     pincode         = models.IntegerField(blank=False, null=False)
     phoneNumber1    = models.CharField(max_length=20, blank=False, null=False)
