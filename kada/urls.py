@@ -8,11 +8,12 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
 
-    path('admin/', admin.site.urls),
+    path('admin', admin.site.urls),
     path('api/auth/', include('rest_framework.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/accounts/', include('accounts.urls'), name='accounts'),
+    path('api/shop/', include('shop.urls'), name='shop'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
