@@ -6,7 +6,7 @@ from .models import Shop
 from products.serializers import ProductSerializer
 from .serializers import ShopSerializer
 from rest_framework.response import Response
-from products.views import addProduct
+from products.views import addProduct, deleteProduct
 
 class AddShopView(APIView):
 
@@ -62,8 +62,9 @@ class ShopProductsView(ListAPIView):
 class ShopProductAddView(APIView):
 
     def post(self, request):
-        shop = Shop.objects.get(id=self.request.data['shop_id'])
-        if shop == None:
+        try:
+            shop = Shop.objects.get(id=self.request.data['shop_id'])
+        except:
             return Response( {"Error": "The shop you are trying to add product to does not exist."})
         if shop.owner != self.request.user:
             return Response( {"Error": "Sorry you can add products only to your shops !!!"} )
@@ -82,9 +83,6 @@ class ShopProductDeleteView(APIView):
             return Response( {'Error': "This shop does not exist in our database"} )
         if self.request.user != shop.owner:
             return Response( {"Error": "Sorry. You cannot delete products from other's shops."} )
-        try:
-            product = shop.product_set.get(id=self.request.data['product_id'])
-        except:
-            return Response( {"Error": "This product does not exist in your shop."})                
-        product.delete()
+        if not deleteProduct(self.request.data):
+            return Response( {"Error": "This product does not exist in your shop."})
         return Response( {"Success": "Product successfully removed from your shop."})

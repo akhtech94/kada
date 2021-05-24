@@ -20,3 +20,11 @@ def addProduct(data):
 
     product.save()
     return True
+
+def deleteProduct(data):
+    try:
+        product = Product.objects.get(id=data['product_id'])
+    except:
+        return False
+    product.delete()
+    return True
