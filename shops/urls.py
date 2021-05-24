@@ -5,7 +5,8 @@ from .views import(
     AddShopView,
     DeleteShopView,
     ShopProductAddView,
-    ShopProductDeleteView
+    ShopProductUpdateView,
+    ShopProductDeleteView,
 ) 
 
 urlpatterns = [
@@ -14,5 +15,6 @@ urlpatterns = [
     path('add-shop', AddShopView.as_view()),
     path('delete-shop', DeleteShopView.as_view()),
     path('add-shop-product', ShopProductAddView.as_view()),
+    path('update-shop-product', ShopProductUpdateView.as_view()),
     path('delete-shop-product', ShopProductDeleteView.as_view()),
 ]

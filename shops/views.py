@@ -6,7 +6,7 @@ from .models import Shop
 from products.serializers import ProductSerializer
 from .serializers import ShopSerializer
 from rest_framework.response import Response
-from products.views import addProduct, deleteProduct
+from products.views import addProduct, deleteProduct, updateProduct
 
 class AddShopView(APIView):
 
@@ -36,6 +36,12 @@ class AddShopView(APIView):
 
         return Response({"Success": "Shop added to the databse"})
 
+class ShopsListView(ListAPIView):
+    permission_classes  = (permissions.AllowAny,)
+    queryset            = Shop.objects.all()
+    serializer_class    = ShopSerializer
+    pagination_class    = None
+
 class DeleteShopView(APIView):
     def delete(self, request):
         shop=Shop.objects.get(id=self.request.data['id'])
@@ -46,18 +52,6 @@ class DeleteShopView(APIView):
         shop.delete()
         return Response( {"Success": "The shop was deleted successfully"} )
 
-class ShopsListView(ListAPIView):
-    permission_classes  = (permissions.AllowAny,)
-    queryset            = Shop.objects.all()
-    serializer_class    = ShopSerializer
-    pagination_class    = None
-
-class ShopProductsView(ListAPIView):
-    permission_classes  = (permissions.AllowAny,)
-    # shop                = Shop.objects.get(id=1)
-    # queryset            = shop.product_set.all()
-    # serializer_class    = ProductSerializer
-    pagination_class    = None
 
 class ShopProductAddView(APIView):
 
@@ -74,6 +68,27 @@ class ShopProductAddView(APIView):
             return Response({"Success": "Product added successfully"})
         return Response( {"Error": "This shop doesn't exist"} )
 
+class ShopProductsView(ListAPIView):
+    permission_classes  = (permissions.AllowAny,)
+    # shop                = Shop.objects.get(id=1)
+    # queryset            = shop.product_set.all()
+    # serializer_class    = ProductSerializer
+    pagination_class    = None
+
+class ShopProductUpdateView(APIView):
+    def post(self, request):
+        user = self.request.user
+        try:
+            shop = Shop.objects.get(id=self.request.data['shop_id'])
+        except:
+            return Response( {"Error": "The shop does not exist"} )
+        if user != shop.owner:
+            return Response( {"Error": "Sorry. You cannot update products in other's shops"} )
+        if not updateProduct(self.request.data, shop):
+            return Response( {"Error": "The requested product could not be found."} )
+        else:
+            return Response( {"Succes": "The Product has been updated"} )
+
 class ShopProductDeleteView(APIView):
 
     def delete(self, request):
@@ -83,6 +98,6 @@ class ShopProductDeleteView(APIView):
             return Response( {'Error': "This shop does not exist in our database"} )
         if self.request.user != shop.owner:
             return Response( {"Error": "Sorry. You cannot delete products from other's shops."} )
-        if not deleteProduct(self.request.data):
+        if not deleteProduct(self.request.data, shop):
             return Response( {"Error": "This product does not exist in your shop."})
         return Response( {"Success": "Product successfully removed from your shop."})
