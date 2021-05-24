@@ -10,7 +10,7 @@ from products.views import addProduct
 
 class AddShopView(APIView):
 
-    def post(self, format=None):
+    def post(self, request):
         user            = self.request.user
         if not user.is_shop:
             return Response({"Error": "Inappropriate account for adding a shop."})
@@ -35,6 +35,16 @@ class AddShopView(APIView):
         )
 
         return Response({"Success": "Shop added to the databse"})
+
+class DeleteShopView(APIView):
+    def delete(self, request):
+        shop=Shop.objects.get(id=self.request.data['id'])
+        if self.request.user != shop.owner:
+            return Response( {"Error": "You cannot remove other's shop !!!"} )
+        if shop == None:
+            return Response( {"Error": "The requested shop doesn't exist"} )
+        shop.delete()
+        return Response( {"Success": "The shop was deleted successfully"} )
 
 class ShopsListView(ListAPIView):
     permission_classes  = (permissions.AllowAny,)
@@ -62,3 +72,19 @@ class ShopProductAddView(APIView):
         if status:
             return Response({"Success": "Product added successfully"})
         return Response( {"Error": "This shop doesn't exist"} )
+
+class ShopProductDeleteView(APIView):
+
+    def delete(self, request):
+        try:
+            shop = Shop.objects.get(id=self.request.data['shop_id'])
+        except :
+            return Response( {'Error': "This shop does not exist in our database"} )
+        if self.request.user != shop.owner:
+            return Response( {"Error": "Sorry. You cannot delete products from other's shops."} )
+        try:
+            product = shop.product_set.get(id=self.request.data['product_id'])
+        except:
+            return Response( {"Error": "This product does not exist in your shop."})                
+        product.delete()
+        return Response( {"Success": "Product successfully removed from your shop."})
