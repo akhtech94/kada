@@ -42,6 +42,49 @@ class ShopsListView(ListAPIView):
     serializer_class    = ShopSerializer
     pagination_class    = None
 
+class UpdateShopView(APIView):
+
+    def post(self, request):
+        user = self.request.user
+        try:
+            shop = Shop.objects.get(id=self.request.data['shop_id'])
+        except:
+            return Response( {"Error": "This shop does not exist"} )
+        if user != shop.owner:
+            return Response( {"Error": "Sorry. You cannot update details of other's shops."} )
+        for key, value in self.request.data.items():
+            if key == 'name':
+                shop.name = self.request.data['name']
+            elif key == 'landmark':
+                shop.landmark = self.request.data['landmark']
+            elif key == 'streetAddress':
+                shop.streetAddress = self.request.data['streetAddress']
+            elif key == 'district':
+                shop.district = self.request.data['district']
+            elif key == 'state':
+                shop.state = self.request.data['state']
+            elif key == 'country':
+                shop.country = self.request.data['country']
+            elif key == 'pincode':
+                shop.pincode = self.request.data['pincode']
+            elif key == 'phoneNumber1':
+                shop.phoneNumber1 = self.request.data['phoneNumber1']
+            elif key == 'phoneNumber2':
+                shop.phoneNumber2 = self.request.data['phoneNumber2']
+            elif key == 'dateJoined':
+                shop.dateJoined = self.request.data['dateJoined']
+            elif key == 'category':
+                shop.category = self.request.data['category']
+            elif key == 'gst':
+                shop.gst = self.request.data['gst']
+            elif key == 'licenseno':
+                shop.licenseno = self.request.data['licenseno']
+            elif key == 'is_active':
+                shop.is_active = self.request.data['is_active']
+        shop.save()
+        return Response( {"Success": "Shop details updated successfully."} )
+            
+
 class DeleteShopView(APIView):
     def delete(self, request):
         shop=Shop.objects.get(id=self.request.data['id'])
